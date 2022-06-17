@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="revisar_foto_form" model="ir.ui.view">
+        <field name="name">Revisar Foto</field>
+        <field name="model">revisar.foto</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="foto"/>
+                </group>
+                <footer>
+                    <button name="revisar_foto" type="object" class="btn-primary" string="Revisar"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_revisar_foto" model="ir.actions.act_window">
+        <field name="name">Revisar Foto</field>
+        <field name="res_model">revisar.foto</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_revisar_foto" id="menu_revisar_foto" parent="menu_bcb_base" sequence="100"/>
+
+
+</odoo>
