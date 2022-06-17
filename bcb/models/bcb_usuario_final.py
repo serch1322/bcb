@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _, tools
-import cv2
-import pytesseract
 from PIL import Image
-import numpy
 
 #OCR de INE para que usuario no tenga que capturar datos de cliente
 
@@ -65,9 +62,7 @@ class BcbUsuarioFinal(models.Model):
         self.state = 'fraude'
 
     def revisar_foto(self):
-        im = Image.open(self.ine_frontal)
-        text = pytesseract.image_to_string(im)
-        print(text)
+        None
 
     def revisar_cara(self):
         None

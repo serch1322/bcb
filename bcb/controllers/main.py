@@ -2,8 +2,6 @@
 
 from odoo import http
 import base64
-import cv2
-import numpy as np
 from odoo.addons.http_routing.models.ir_http import slug
 
 class BCBWeb(http.Controller):
