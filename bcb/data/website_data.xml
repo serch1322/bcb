@@ -33,6 +33,7 @@
             <field name="page_id" ref="bcb.validar_datos"/>
             <field name="parent_id" ref="bcb.bcb_menu"/>
             <field name="group_ids" eval="[(4,ref('base.group_user'))]"/>
+            <!--<field name="group_ids" eval="[(4,ref('bcb.groups_bcb_user'))]"/>-->
             <field name="sequence" type="int">10</field>
         </record>
 
@@ -41,6 +42,7 @@
             <field name="page_id" ref="bcb.listado_clientes"/>
             <field name="parent_id" ref="bcb.bcb_menu"/>
             <field name="group_ids" eval="[(4,ref('base.group_user'))]"/>
+            <!--<field name="group_ids" eval="[(4,ref('bcb.groups_bcb_user'))]"/>-->
             <field name="sequence" type="int">20</field>
         </record>
     </data>

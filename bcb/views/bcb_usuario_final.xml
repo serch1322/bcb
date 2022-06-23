@@ -107,6 +107,7 @@
                 <filter string="Moroso" name="moroso" domain="[('state', '=', 'moroso')]"/>
                 <filter string="Fraude" name="fraude" domain="[('state', '=', 'fraude')]"/>
                 <separator/>
+                <filter string="Fecha de Creación" name="filter_date" date="create_date" default_period="this_month"/>
                 <filter invisible="1" string="Actividades Tardías" name="activities_overdue"
                     domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter invisible="1" string="Actividades Hoy" name="activities_today"

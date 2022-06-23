@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import http
+from odoo import http, _
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+from collections import OrderedDict
 import base64
+import cv2
+import numpy as np
 from odoo.addons.http_routing.models.ir_http import slug
 
 class BCBWeb(http.Controller):
@@ -67,7 +71,7 @@ class BCBWeb(http.Controller):
 
     # Busqueda Usuario Final
     @http.route(['/listado_clientes', '/listado_clientes/pagina/<int:page>'], type='http', auth="user", website=True)
-    def listado_clientes (self, page=0, **kw):
+    def listado_clientes (self, page=1, sortby=None, filterby=None, **kw):
         domain = []
         usuario = http.request.env['bcb.usuario.final']
 
@@ -76,27 +80,52 @@ class BCBWeb(http.Controller):
         if busqueda:
             domain.append( ('name', 'ilike',busqueda.strip() ))
 
+        searchbar_sortings = {
+            'create_desc': {'label': _('Más Reciente a Más Antiguo'), 'order': 'create_date desc'},
+            'create_asc': {'label': _('Más Antiguo a Más Reciente'), 'order': 'create_date asc'},
+            'name_asc': {'label': _('Nombre A-Z'), 'order': 'name asc'},
+            'name_desc': {'label': _('Nombre Z-A'), 'order': 'name desc'},
+        }
+        # Orden por usuarios predeterminado
+        if not sortby:
+            sortby = 'create_desc'
+        usuarios = searchbar_sortings[sortby]['order']
+
+        searchbar_filters = {
+            'todos': {'label': _('Todos'), 'domain': []},
+            'limpio': {'label': _('Limpio'), 'domain': [('state', '=', 'limpio')]},
+            'moroso': {'label': _('Moroso'), 'domain': [('state', '=', 'moroso')]},
+            'fraude': {'label': _('Fraude'), 'domain': [('state', '=', 'fraude')]},
+        }
+
+        # Valor de filtro predeterminado
+        if not filterby:
+            filterby = 'todos'
+        domain += searchbar_filters[filterby]['domain']
+
 
         search_usuario = usuario.search(domain)
         ppg=9
-        pager = http.request.website.pager(
+        pager = portal_pager(
             url= '/listado_clientes',
             total= len(search_usuario),
             page = page, #Pagina actual
             step= ppg, #Item por pagina
             scope= 3, #Numero de paginas a mostrar
-            url_args=kw
+            url_args={'sortby': sortby},
         )
-        #_logger.error('PAGINACION: %s', pager)
         offset = pager['offset']
         usuarios = search_usuario[offset:offset+ppg]
-
-        #currency = http.request.env.company.currency_id
 
         return http.request.render('bcb.listado_clientes',{
             'usuarios': usuarios,
             'pager': pager,
             'busqueda': busqueda,
+            'default_url': '/listado_clientes',
+            'searchbar_sortings': searchbar_sortings,
+            'sortby': sortby,
+            'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
+            'filterby': filterby,
         })
 
     #Vista Usuario Final

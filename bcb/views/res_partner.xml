@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+        <!-- Acción BCB -->
+        <!--<record id="res_partner_bcb" model="ir.actions.act_window">
+            <field name="name">Usuario Final BCB</field>
+            <field name="res_model">bcb.usuario.final</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_clientes': active_id}</field>
+        </record> -->
+
+        <!-- Contador BCB -->
+        <!--<record id="res_partner_bcb" model="ir.ui.view">
+            <field name="name">res.partner.bcb</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="3"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" name="ver_bcb" groups="bcb.groups_bcb_manager" icon="fa-user">
+                        <field string="Usuarios BCB" name="cuenta_usuario_bcb" widget="statinfo"/>
+                    </button>
+                </div>
+            </field>
+        </record> -->
+</odoo>

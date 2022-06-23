@@ -69,6 +69,8 @@ class BcbUsuarioFinal(models.Model):
 
 class HuellaDactilar(models.Model):
     _name = 'huella.dactilar'
+    _description = 'Huello Dactilar'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     usuario_id = fields.Many2one('bcb.usuario.final',string="Huellas de")
     huella_dactilar = fields.Image(string="Huella Dactilar", required=True)
@@ -76,6 +78,7 @@ class HuellaDactilar(models.Model):
 
 class EmpresaUsuario(models.Model):
     _name = 'empresa.usuario'
+    _description = 'Empresa Usuario'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string="Empresa", store=True, required=True)

@@ -9,7 +9,7 @@
                     <field name="foto"/>
                 </group>
                 <footer>
-                    <!--<button name="revisar_foto" type="object" class="btn-primary" string="Revisar"/>-->
+                    <button name="revisar_foto" type="object" class="btn-primary" string="Revisar"/>
                     <button string="Cerrar" special="cancel"/>
                 </footer>
             </form>

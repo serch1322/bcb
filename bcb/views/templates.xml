@@ -14,7 +14,7 @@
                                   <label for="exampleInputPassword1">Validar Rostro</label>
                                   <input type="image" class="img-thumbnail" id="exampleInputPassword1" name="imagen"/>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button type="submit" class="btn btn-primary">Revisar</button>
                               </form>
                         </div>
                     </div>
@@ -42,6 +42,10 @@
                                 </div>
                             </form>
                         </div>
+                        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                        <t t-call="portal.portal_searchbar">
+                            <t t-set="title">Usuarios</t>
+                        </t>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -64,11 +68,9 @@
                                 <div class="col-12">
                                     <nav aria-label="Page navigation example">
                                       <ul class="pagination justify-content-center">
-
                                         <li t-attf-class="page-item #{ 'disabled' if pager['page']['num'] == 1  else '' }">
                                           <a class="page-link" t-att-href="pager['page_previous']['url'] if pager['page']['num'] != 1 else None " tabindex="-1" aria-disabled="true">Anterior</a>
                                         </li>
-
                                             <t t-foreach="pager['pages']" t-as="page">
                                                 <li class="page-item">
                                                     <a class="page-link" t-att-href="page['url']"> <span t-esc="page['num']"/>  </a>
@@ -91,7 +93,7 @@
     <!-- Vista Usuario Final -->
     <template id="usuario_final" name="Usuario Final">
         <t t-call="website.layout">
-            <t t-set="additional_title"><span t-esc="usuario.name"/></t> <!-- Quitar span del nombre en la pestaña -->
+            <t t-set="additional_title" t-value="usuario.name"/>
             <div id="wrap">
                 <div class="container">
                     <div class="row">
@@ -103,15 +105,15 @@
                     <div class="row">
                         <div class="col-4 text-center">
                             <span>Rostro del Usuario</span>
-                            <p t-field="usuario.rostro" style="height:270px" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
+                            <p t-field="usuario.rostro" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
                         </div>
                         <div class="col-4 text-center">
                             <span>INE Parte Frontal</span>
-                            <p t-field="usuario.ine_frontal" style="height:270px" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
+                            <p t-field="usuario.ine_frontal" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
                         </div>
                         <div class="col-4 text-center">
                             <span>INE Parte Posterior</span>
-                            <p t-field="usuario.ine_posterior" style="height:100px" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
+                            <p t-field="usuario.ine_posterior" t-options="{'widget': 'image','style':'width: 350px;height: 250px'}" />
                         </div>
                     </div>
                     <div class="row">
@@ -126,6 +128,7 @@
                             <br/>
                         </div>
                     </div>
+                    <br/>
                     <div class="row">
                         <div class="col-12">
                                <table class="table">
@@ -140,7 +143,7 @@
                                   <tbody>
                                       <t t-foreach="usuario.empresas" t-as="ue">
                                         <tr>
-                                          <td><span t-field="ue.name"/></td>
+                                          <td><span t-field="ue.name" domain="[('uid','=', ue.cliente)]"/></td>
                                           <td><span t-field="ue.rfc"/></td>
                                           <td>
                                               <span t-if="ue.state == 'limpio'" class="badge badge-pill badge-secondary bg-success">Limpio</span>
