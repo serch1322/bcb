@@ -3,6 +3,8 @@
 from odoo import http, _
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 from collections import OrderedDict
+from odoo.osv.expression import OR, AND
+from markupsafe import Markup
 import base64
 import cv2
 import numpy as np
@@ -69,27 +71,48 @@ class BCBWeb(http.Controller):
         #     return value
         # return http.request.render('bcb.validar_datos')
 
+    #Valores para Buscar
+    def _valores_para_buscador_usuario(self):
+        values = {
+            'all': {'input': 'all', 'label': ('Buscar en Todo'), 'order': 1},
+            'name': {'input': 'name', 'label': _('Buscar por Nombre'), 'order': 2},
+            'estado': {'input': 'estado', 'label': _('Buscar por Estado'), 'order': 3},
+        }
+        return dict(sorted(values.items(), key=lambda item: item[1]["order"]))
+
+    #Buscador por Dominio
+    def _buscar_usuario_por_filtro(self, search_in, search):
+        search_domain = []
+        if search_in in ('all', 'all'):
+            search_domain.append([('name', 'ilike', search)])
+            search_domain.append([('state', 'ilike', search)])
+        if search_in in ('name', 'all'):
+            search_domain.append([('name', 'ilike', search)])
+        if search_in in ('estado', 'all'):
+            search_domain.append([('state', 'ilike', search)])
+        return search_domain
+
+    #Acomodar por Busqueda
+    def _acomodar_por_usuario(self):
+        return {
+            'create_desc': {'label': _('Más Reciente a Más Antiguo'), 'order': 'create_date desc', 'sequence': 1},
+            'create_asc': {'label': _('Más Antiguo a Más Reciente'), 'order': 'create_date asc', 'sequence': 2},
+            'name_asc': {'label': _('Nombre A-Z'), 'order': 'name asc', 'sequence': 3},
+            'name_desc': {'label': _('Nombre Z-A'), 'order': 'name desc', 'sequence': 4},
+        }
+
+    ## Arreglar buscador y arreglar acomodador
+
     # Busqueda Usuario Final
     @http.route(['/listado_clientes', '/listado_clientes/pagina/<int:page>'], type='http', auth="user", website=True)
-    def listado_clientes (self, page=1, sortby=None, filterby=None, **kw):
+    def listado_clientes (self, page=1, sortby=None, filterby=None, search=None, search_in='all', **kw):
         domain = []
         usuario = http.request.env['bcb.usuario.final']
 
-        #Usando la buscador
-        busqueda = http.request.params.get('search', '' )
-        if busqueda:
-            domain.append( ('name', 'ilike',busqueda.strip() ))
+        searchbar_inputs = self._valores_para_buscador_usuario()
 
-        searchbar_sortings = {
-            'create_desc': {'label': _('Más Reciente a Más Antiguo'), 'order': 'create_date desc'},
-            'create_asc': {'label': _('Más Antiguo a Más Reciente'), 'order': 'create_date asc'},
-            'name_asc': {'label': _('Nombre A-Z'), 'order': 'name asc'},
-            'name_desc': {'label': _('Nombre Z-A'), 'order': 'name desc'},
-        }
-        # Orden por usuarios predeterminado
-        if not sortby:
-            sortby = 'create_desc'
-        usuarios = searchbar_sortings[sortby]['order']
+        if search and search_in:
+            domain += self._buscar_usuario_por_filtro(search_in, search)
 
         searchbar_filters = {
             'todos': {'label': _('Todos'), 'domain': []},
@@ -97,6 +120,15 @@ class BCBWeb(http.Controller):
             'moroso': {'label': _('Moroso'), 'domain': [('state', '=', 'moroso')]},
             'fraude': {'label': _('Fraude'), 'domain': [('state', '=', 'fraude')]},
         }
+
+        searchbar_sortings = self._acomodar_por_usuario()
+        searchbar_sortings = dict(sorted(self._acomodar_por_usuario().items(),
+                                         key=lambda item: item[1]["sequence"]))
+
+        # Orden por usuarios predeterminado
+        if not sortby:
+            sortby = 'create_desc'
+        usuarios = searchbar_sortings[sortby]['order']
 
         # Valor de filtro predeterminado
         if not filterby:
@@ -120,12 +152,13 @@ class BCBWeb(http.Controller):
         return http.request.render('bcb.listado_clientes',{
             'usuarios': usuarios,
             'pager': pager,
-            'busqueda': busqueda,
             'default_url': '/listado_clientes',
+            'searchbar_inputs': searchbar_inputs,
             'searchbar_sortings': searchbar_sortings,
             'sortby': sortby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'filterby': filterby,
+            'search': search,
         })
 
     #Vista Usuario Final
@@ -133,16 +166,16 @@ class BCBWeb(http.Controller):
     def show_producto_model(self, usuario, **kw):
         return http.request.render('bcb.usuario_final', {'usuario': usuario})
 
-    #Crear Empresa para Usuario Final
-    @http.route('/crearempresa/<model("bcb.usuario.final"):usuario>', auth="user", website=True)
-    def crearEmpresa(self, usuario=None, **kw):
-        usuario_final = http.request.env['bcb.usuario.final'].browse(int(http.request.params.get('usuario_id', False)))
-        if usuario_final:
-            http.request.env['empresa.usuario'].create({
-                'usuario_id': self.usuario_final,
-                'cliente': http.request.params.get('cliente', ''),
-                'empresa': http.request.params.get('empresa', ''),
-                'rfc': http.request.params.get('rfc', ''),
-            })
-            return http.request.redirect('/usuario_final/' + str(usuario_final.id))
-        return http.request.render('bcb.crear_empresa', {'usuario_final': usuario})
+    # #Crear Empresa para Usuario Final
+    # @http.route('/crearempresa/<model("bcb.usuario.final"):usuario>', auth="user", website=True)
+    # def crearEmpresa(self, usuario=None, **kw):
+    #     usuario_final = http.request.env['bcb.usuario.final'].browse(int(http.request.params.get('usuario_id', False)))
+    #     if usuario_final:
+    #         http.request.env['empresa.usuario'].create({
+    #             'usuario_id': self.usuario_final,
+    #             'cliente': http.request.params.get('cliente', ''),
+    #             'empresa': http.request.params.get('empresa', ''),
+    #             'rfc': http.request.params.get('rfc', ''),
+    #         })
+    #         return http.request.redirect('/usuario_final/' + str(usuario_final.id))
+    #     return http.request.render('bcb.crear_empresa', {'usuario_final': usuario})

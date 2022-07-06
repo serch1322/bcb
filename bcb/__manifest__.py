@@ -23,7 +23,7 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'bcb/static/src/js/actualizar_estado.js',
+            'bcb/static/src/js/usuario_final.js',
         ],
         'web.assets_qweb': [
             'portal/static/src/xml/portal_chatter.xml',

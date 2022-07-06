@@ -30,22 +30,12 @@
             <div id="wrap">
                 <div class="container">
                     <div class="row mt-5 mb-5">
-                        <div class="col-6">
-                            <form class="input-group" action="/listado_clientes" method="get">
-                                <div class="custom-file">
-                                  <input type="search" class="form-control" name="search"  t-att-value="busqueda"/>
-                                    <!-- Poner filtro de Usuario Limpio, Moroso o Fraude por Color-->
-                                    <!-- Filtro de Registro Recientes 2 meses -->
-                                </div>
-                                <div class="input-group-append">
-                                   <button class="btn btn-primary" type="submit"> <i class="fa fa-search"></i></button>
-                                </div>
-                            </form>
+                        <div class="col-12">
+                            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                            <t t-call="portal.portal_searchbar">
+                                <t t-set="title">Usuarios</t>
+                            </t>
                         </div>
-                        <t t-set="breadcrumbs_searchbar" t-value="True"/>
-                        <t t-call="portal.portal_searchbar">
-                            <t t-set="title">Usuarios</t>
-                        </t>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -55,10 +45,21 @@
                                         <p t-field="u.rostro" style="height:270px" t-options="{'widget':'image'}"/>
                                         <div class="card-body">
                                            <a t-attf-href="/usuario_final/{{ u.id }}"> <h5 class="card-title" t-esc="u.name" /> </a>
-                                            <span t-if="u.state == 'limpio'" class="badge badge-pill badge-secondary bg-success">Limpio</span>
-                                            <span t-if="u.state == 'moroso'" class="badge badge-pill badge-secondary bg-warning">Moroso</span>
-                                            <span t-if="u.state == 'fraude'" class="badge badge-pill badge-secondary bg-danger">Fraude</span>
-                                            <br/>
+                                            <t t-if="u.state == 'limpio'">
+                                                <span t-if="u.state == 'limpio'" class="badge badge-pill badge-secondary bg-success">Limpio</span>
+                                                <br/>
+                                                <br/>
+                                            </t>
+                                            <t t-if="u.state == 'moroso'">
+                                                <span class="badge badge-pill badge-secondary bg-warning">Moroso</span>
+                                                <br/>
+                                                <br/>
+                                            </t>
+                                            <t t-if="u.state == 'fraude'">
+                                                <span class="badge badge-pill badge-secondary bg-danger">Fraude</span>
+                                                <br/>
+                                                <br/>
+                                            </t>
                                             <a t-attf-href="/usuario_final/{{ u.id }}" class="btn btn-primary">Mas detalles</a>
                                         </div>
                                     </div>
@@ -124,7 +125,8 @@
                     <div class="row">
                         <div class="col-12 text-center">
                             <br/>
-                            <a class="btn btn-primary" t-attf-href="/crearempresa/{{usuario.id}}"> Crear Nueva Empresa </a>
+                            <t t-set="bcb_usuario_final_id" t-value="usuario.id"/>
+                            <a role="button" class="btn btn-primary btn-block mb8" t-att-data-bcb-usuario-final="bcb_usuario_final_id" data-toggle="modal" data-target="#modalcrearempresa" href="#"> Crear Nueva Empresa </a>
                             <br/>
                         </div>
                     </div>
@@ -151,7 +153,8 @@
                                               <span t-if="ue.state == 'fraude'" class="badge badge-pill badge-secondary bg-danger">Fraude</span>
                                           </td>
                                             <td>
-                                                <a t-if="ue.state == 'limpio'" role="button" class="btn btn-primary btn-block mb8" data-toggle="modal" data-target="#modalaccept" href="#">
+                                                <t t-set="empresa_usuario_id" t-value="ue.id"/>
+                                                <a t-if="ue.state == 'limpio'" role="button" class="btn btn-primary btn-block mb8" data-toggle="modal" t-att-data-empresa-usuario="empresa_usuario_id" data-target="#modalaccept" href="#">
                                                     <i class="fa fa-check"/><t t-if="ue.state == 'limpio'">Actualizar Estado de Cliente</t>
                                                 </a>
                                             </td>
@@ -164,7 +167,39 @@
                                 </table>
                         </div>
                     </div>
-                    <!-- Page content -->
+                     <!-- Forma para Crear Nueva Empresa -->
+                    <div id="quote_content" class="col-12 col-lg justify-content-end">
+
+                        <!-- modal relative to the actions sign and pay -->
+                        <div role="dialog" class="modal fade" id="modalcrearempresa">
+                            <div class="modal-dialog">
+                                <form id="crear_empresa"  method="POST" class="modal-content js_website_submit_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <header class="modal-header">
+                                        <h4 class="modal-title">Crear Nueva Empresa</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">×</button>
+                                    </header>
+                                    <main class="modal-body" id="sign-dialog">
+                                        <p>
+                                            <span>Al llenar este formulario, acepta que vinculara al usuario final con la empresa dada de alta:</span>
+                                        </p>
+                                        <div class="form-group">
+                                          <label for="empresa">Empresa</label>
+                                          <input type="text" class="form-control" id="empresa" name="empresa" t-att-value="''"  />
+                                        </div>
+                                        <div class="form-group">
+                                          <label for="rfc">RFC</label>
+                                          <input type="text" class="form-control" id="rfc" name="rfc" t-att-value="''"  />
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="cancel" class="btn btn-danger">Cancelar</button>
+                                    </main>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Forma para Actualizar Estado de Cliente -->
                     <div id="quote_content" class="col-12 col-lg justify-content-end">
 
                         <!-- modal relative to the actions sign and pay -->
@@ -220,10 +255,6 @@
                                               <span t-if="ue.state == 'moroso'" class="badge badge-pill badge-secondary bg-warning">Moroso</span>
                                               <span t-if="ue.state == 'fraude'" class="badge badge-pill badge-secondary bg-danger">Fraude</span>
                                           </td>
-
-                                            <!-- Agregar Colores en el Status del Cliente -->
-                                            <!-- Boton para Actualizar Estado de Cliente dependiendo de su Status -->
-                                            <!-- Agregar Boton para Crear Nuevas Empresas Ligadas -->
                                         </tr>
                                       </t>
                                   </tbody>
@@ -234,6 +265,9 @@
                         <div class="col-12 text-center">
                             <br/>
                             <a class="btn btn-primary" href="/listado_clientes"> Regresar </a>
+                        </div>
+                        <div class="col-12">
+                            <br/>
                         </div>
                     </div>
                 </div>
