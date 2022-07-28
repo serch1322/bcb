@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bcb_user,Usuario Bcb,model_bcb_usuario_final,groups_bcb_user,1,0,1,0
+access_bcb_admin,Administrador Bcb,model_bcb_usuario_final,groups_bcb_manager,1,1,1,1
+access_foto_admin,Administrador Revisar Foto,model_revisar_foto,groups_bcb_manager,1,1,1,1
+access_huella_user,Usuario Huella Dactilar,model_huella_dactilar,groups_bcb_user,1,0,1,0
+access_huella_admin,Administrador Huella Dactilar,model_huella_dactilar,groups_bcb_manager,1,1,1,1
+access_empresa_user,Usuario Empresa Usuario,model_empresa_usuario,groups_bcb_user,1,0,1,0
+access_empresa_admin,Administrador Empresa Usuario,model_empresa_usuario,groups_bcb_manager,1,1,1,1
