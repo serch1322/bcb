@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_manifesto" model="ir.actions.report">
+            <field name="name">Manifesto de Cliente</field>
+            <field name="model">bcb.usuario.final</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bcb.reporte_manifesto</field>
+            <field name="report_file">bcb.reporte_manifesto</field>
+            <field name="print_report_name">'Manifesto de %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_bcb_usuario_final"/>
+            <field name="binding_type">report</field>
+    </record>
+
+    <template id="reporte_manifesto">
+        <t t-call="web.html_container"> <!-- Plantilla Base a Importar -->
+            <t t-foreach="docs" t-as="doc"> <!-- doc: ES el registro actual desde el cual se realiza la impresión -->
+                <t t-call="web.basic_layout">
+                    <div class="page"> <!-- Hoja -->
+                        <div class="row" style="border:1px solid black;font-size=14px;">
+                            <strong>AUTORIZACIÓN PARA EL USO Y TRATAMIENTO DE DATOS PERSONALES</strong>
+                        </div>
+                        <div class="row">
+                            <span>A través del presente acto, manifiesto que la sociedad denominada “IT Reingenierías, S. de R.L.” (en lo sucesivo IT Reingenierías) me ha informado de manera calara, precisa y expresa, lo siguiente:</span><br/>
+<span>A. Finalidad del uso y tratamiento de datos personales. – Que mis datos personales serán tratados por IT Reingenierías con la finalidad de registrar mi información para corroborar mi identidad, consultar mi historial crediticio y, para que en lo sucesivo mi identidad sea validada mediante el uso de datos biométricos.</span><br/>
+<span>B. Usuarios de la información. – Me hago conocedor respecto de que los datos proporcionados a IT Reingenierías podrán ser compartidos, transmitidos, entregados o divulgados a terceros para sus bases de datos en sistemas de información tanto de entidades públicas como privadas.</span><br/>
+<span>C. Derechos del titular de la información. – Que como titular de los datos personales, en atención a lo dispuesto por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) y la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados (LGPDPPSO), me asiste el derecho a conocer, actualizar, rectificar, revocar y suspender el uso de mis datos personales.</span><br/>
+<span>D. Responsables y encargados del uso y tratamiento de la información. – Que el responsable y encargado del uso y tratamiento de la información que autorizo a utilizar es la empresa denominada IT Reingenierías, S. de R.L. y que ante cualquier duda o inquietud sobre el uso y tratamiento de mis datos podré contactar a la citada sociedad a través del correo electrónico contacto@itreingenierias.com</span><br/>
+<span>E. Autorización para el uso y tratamiento de datos biométricos. – Dentro de los datos personales objeto de la presente autorización, se encuentran las huellas digitales, fotografías y la toma del iris ocular.</span><br/>
+<span>En virtud de lo anterior, manifiesto de manera expresa mi consentimiento a través del cual autorizo a IT Reingenierías para el uso y tratamiento de los datos personales que me fueron recolectados para las finalidades y términos aquí establecidos.</span><br/>
+<span>Guadalajara, Jalisco a la fecha </span> <span t-field="doc.create_date"/> <span>.</span>
+                        </div>
+                        <table class="table table-sm o_main_table" style="border:1px solid black;font-size=14px;">
+                            <thead>
+                                <tr>
+                                    <th style="width:15px;border:1px solid black;">Nombre Manuscrito</th>
+                                    <th style="width:15px;border:1px solid black;">Firma</th>
+                                    <th style="width:15px;border:1px solid black;">Huella</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid black;">
+                                        <span t-field="doc.nombre_manuscrito" t-options="{'widget': 'image'}" style="max-height: 4cm; max-width: 8cm;"/>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <span t-field="doc.firma" t-options="{'widget': 'image'}" style="max-height: 4cm; max-width: 8cm;"/>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                    <!-- Pendiente Agregar Huella -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <span>SR. </span> <span t-field="doc.name"/> <span> POR SU PROPIO DERECHO</span>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
